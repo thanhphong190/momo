@@ -25,7 +25,7 @@
 			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>momoumgq20200430</string>
+				<string>momoq16m20230912</string>
 			</array>
 		</dict>
 	</array>
@@ -66,5 +66,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	
 </dict>
 </plist>

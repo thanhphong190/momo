@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:momo_vn/momo_vn.dart';
-import 'package:flutter/services.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,10 +24,10 @@ class _MyAppState extends State<MyApp> {
     _paymentStatus = "";
     initPlatformState();
   }
+
   Future<void> initPlatformState() async {
     if (!mounted) return;
-      setState(() {
-    });
+    setState(() {});
   }
 
   @override
@@ -37,38 +35,37 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('THANH TOÁN QUA ỨNG DỤNG MOMO'),
+          title: const Text('THANH TOÁN QUA ỨNG DỤNG MOMO'),
         ),
         body: Center(
           child: Column(
             children: <Widget>[
               Column(
                 children: [
-                  FlatButton(
+                  MaterialButton(
                     color: Colors.blue,
                     textColor: Colors.white,
                     disabledColor: Colors.grey,
                     disabledTextColor: Colors.black,
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     splashColor: Colors.blueAccent,
-                    child: Text('DEMO PAYMENT WITH MOMO.VN'),
+                    child: const Text('DEMO PAYMENT WITH MOMO.VN'),
                     onPressed: () async {
-                      MomoPaymentInfo options = MomoPaymentInfo(
-                          merchantName: "TTNC&TVKT",
-                          appScheme: "MOMOUMGQ111111",
-                          merchantCode: 'MOMOUMGQ111111',
-                          partnerCode: 'MOMOUMGQ111111',
+                      final MomoPaymentInfo options = MomoPaymentInfo(
+                          merchantName: "SERO",
+                          appScheme: 'momoq16m20230912',
+                          merchantCode: 'MOMOQ16M20230912',
+                          partnerCode: 'MOMOQ16M20230912',
                           amount: 60000,
                           orderId: '12321312',
                           orderLabel: 'Gói khám sức khoẻ',
                           merchantNameLabel: "HẸN KHÁM BỆNH",
                           fee: 10,
                           description: 'Thanh toán hẹn khám chữa bệnh',
-                          username: '01234567890',
+                          username: '0352972441',
                           partner: 'merchant',
                           extra: "{\"key1\":\"value1\",\"key2\":\"value2\"}",
-                          isTestMode: true
-                      );
+                          isTestMode: true);
                       try {
                         _momoPay.open(options);
                       } catch (e) {
@@ -85,25 +82,27 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+
   @override
   void dispose() {
     super.dispose();
     _momoPay.clear();
   }
+
   void _setState() {
     _paymentStatus = 'Đã chuyển thanh toán';
     if (_momoPaymentResult.isSuccess == true) {
       _paymentStatus += "\nTình trạng: Thành công.";
-      _paymentStatus += "\nSố điện thoại: " + _momoPaymentResult.phoneNumber.toString();
-      _paymentStatus += "\nExtra: " + _momoPaymentResult.extra!;
-      _paymentStatus += "\nToken: " + _momoPaymentResult.token.toString();
-    }
-    else {
+      _paymentStatus += "\nSố điện thoại: ${_momoPaymentResult.phoneNumber}";
+      _paymentStatus += "\nExtra: ${_momoPaymentResult.extra!}";
+      _paymentStatus += "\nToken: ${_momoPaymentResult.token}";
+    } else {
       _paymentStatus += "\nTình trạng: Thất bại.";
-      _paymentStatus += "\nExtra: " + _momoPaymentResult.extra.toString();
-      _paymentStatus += "\nMã lỗi: " + _momoPaymentResult.status.toString();
+      _paymentStatus += "\nExtra: ${_momoPaymentResult.extra}";
+      _paymentStatus += "\nMã lỗi: ${_momoPaymentResult.status}";
     }
   }
+
   void _handlePaymentSuccess(PaymentResponse response) {
     setState(() {
       _momoPaymentResult = response;

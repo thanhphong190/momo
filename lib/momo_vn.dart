@@ -1,7 +1,7 @@
+import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:flutter/services.dart';
 import 'package:eventify/eventify.dart';
-import 'dart:convert' as convert;
 
 class MomoVn {
   // Response codes from platform
@@ -14,22 +14,22 @@ class MomoVn {
   static const EVENT_PAYMENT_SUCCESS = 'payment.success';
   static const EVENT_PAYMENT_ERROR = 'payment.error';
 
-  static const MethodChannel _channel = const MethodChannel('momo_vn');
+  static const MethodChannel _channel = MethodChannel('momo_vn');
 
   late EventEmitter _eventEmitter;
 
   MomoVn() {
-    _eventEmitter = new EventEmitter();
+    _eventEmitter = EventEmitter();
   }
 
   /// Opens checkout
-  void open(MomoPaymentInfo options) async {
-    PaymentResponse validationResult = _validateOptions(options);
+  Future<void> open(MomoPaymentInfo options) async {
+    final PaymentResponse validationResult = _validateOptions(options);
     if (!validationResult.isSuccess!) {
       _handleResult({'type': _CODE_PAYMENT_ERROR, 'data': validationResult});
       return;
     }
-    var response = await _channel.invokeMethod('open', options.toJson());
+    final response = await _channel.invokeMethod('open', options.toJson());
     _handleResult({'data': response, 'type': response['status']});
   }
 
@@ -54,7 +54,7 @@ class MomoVn {
   }
 
   void on(String event, Function handler) {
-    EventCallback cb = (event, cont) {
+    final EventCallback cb = (event, cont) {
       handler(event.eventData);
     };
     _eventEmitter.on(event, null, cb);
@@ -92,7 +92,9 @@ class MomoVn {
       mes = 'description is required. Please check if key is present in options.';
       error = true;
     }
-    return error ? PaymentResponse(false, _CODE_PAYMENT_ERROR, '', '', mes, '', '') : PaymentResponse(true, _CODE_PAYMENT_SUCCESS, '', '', '', '', '');
+    return error
+        ? PaymentResponse(false, _CODE_PAYMENT_ERROR, '', '', mes, '', '')
+        : PaymentResponse(true, _CODE_PAYMENT_SUCCESS, '', '', '', '', '');
   }
 }
 
@@ -108,16 +110,30 @@ class PaymentResponse {
   PaymentResponse(this.isSuccess, this.status, this.token, this.phoneNumber, this.message, this.data, this.extra);
 
   static PaymentResponse fromMap(Map<dynamic, dynamic> map) {
-    bool? isSuccess = map["isSuccess"];
-    int status = int.parse(map['status'].toString());
-    String? token = map["token"];
-    String? phoneNumber = map["phoneNumber"];
-    String? data = map["data"];
-    String? message = map["message"];
+    final bool? isSuccess = map["isSuccess"];
+    final int status = int.parse(map['status'].toString());
+    final String? token = map["token"];
+    final String? phoneNumber = map["phoneNumber"];
+    final String? data = map["data"];
+    final String? message = map["message"];
     String? extra = "";
     extra = map["extra"];
-    return new PaymentResponse(isSuccess, status, token, phoneNumber, data, message, extra);
+    return PaymentResponse(isSuccess, status, token, phoneNumber, data, message, extra);
   }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'isSuccess': isSuccess,
+      'status': status,
+      'token': token,
+      'phoneNumber': phoneNumber,
+      'data': data,
+      'message': message,
+      'extra': extra,
+    };
+  }
+
+  String toJson() => json.encode(toMap());
 }
 
 class MomoPaymentInfo {
@@ -156,15 +172,15 @@ class MomoPaymentInfo {
   });
 
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> json = {
-      "merchantname": this.merchantName,
-      "merchantcode": this.merchantCode,
-      "partnercode": this.partnerCode,
-      "amount": this.amount,
-      "orderid": this.orderId,
-      "orderlabel": this.orderLabel,
-      "partner": this.partner,
-      "fee": this.fee,
+    final Map<String, dynamic> json = {
+      "merchantname": merchantName,
+      "merchantcode": merchantCode,
+      "partnercode": partnerCode,
+      "amount": amount,
+      "orderid": orderId,
+      "orderlabel": orderLabel,
+      "partner": partner,
+      "fee": fee,
       "isTestMode": isTestMode,
       "merchantnamelabel": merchantNameLabel
     };
